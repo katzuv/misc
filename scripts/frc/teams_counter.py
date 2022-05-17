@@ -2,6 +2,8 @@ import click
 
 CONTEXT = {"help_option_names": ["-h", "--help"]}
 
+API_BASE_URL = "https://www.thebluealliance.com/api/v3/"
+
 
 @click.command(context_settings=CONTEXT)
 @click.option(
