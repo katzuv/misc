@@ -15,6 +15,7 @@ CONTEXT = {"help_option_names": ["-h", "--help"]}
     show_envvar=True,
     help="TBA API authorization key",
 )
+@click.option("-e", "--event", multiple=True, help="Event key")
 def cli():
     pass
 
