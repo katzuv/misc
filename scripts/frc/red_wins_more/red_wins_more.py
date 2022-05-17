@@ -48,14 +48,14 @@ def red_wins_more(event_key: str, matches: list[dict]) -> str:
 
     red_wins = wins[RED]
     blue_wins = wins[BLUE]
-    total = red_wins + blue_wins
+    total_matches_amount = red_wins + blue_wins
     difference = red_wins - blue_wins
 
-    red_wins_percent = _calculate_percent(red_wins, total)
-    blue_wins_percent = _calculate_percent(blue_wins, total)
+    red_wins_percent = _calculate_percent(red_wins, total_matches_amount)
+    blue_wins_percent = _calculate_percent(blue_wins, total_matches_amount)
 
     return ANALYSIS_RESULT_TEMPLATE.substitute(
-        total=total,
+        total=total_matches_amount,
         event_key=event_key,
         red_wins=red_wins,
         red_wins_percent=red_wins_percent,
