@@ -1,0 +1,6 @@
+$total qualifications matches were played in $event_key.
+
+Out of them, the Red alliance won $red_wins qualification matches which are about $red_wins_percent% out of all qualification matches.
+The Blue alliance won $blue_wins qualification matches which are about $blue_wins_percent% out of all qualification matches.
+
+The Red alliance won $difference more qualification matches, relative to the Blue alliance.
