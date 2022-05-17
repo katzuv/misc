@@ -1,7 +1,9 @@
 import click
 
+CONTEXT = {"help_option_names": ["-h", "--help"]}
 
-@click.command
+
+@click.command(context_settings=CONTEXT)
 def cli():
     pass
 
