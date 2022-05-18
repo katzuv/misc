@@ -31,3 +31,11 @@ def get_all_teams(api_key: str) -> list[dict]:
         teams.extend(paged_teams)
 
     return teams
+
+
+def get_israeli_teams(teams: list[dict]) -> list[dict]:
+    """
+    :param teams: list of teams
+    :return: only teams which are based in Israel
+    """
+    return [team for team in teams if team[COUNTRY] == ISRAEL]
