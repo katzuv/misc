@@ -6,3 +6,4 @@ TEAMS_SIMPLE_ENDPOINT = string.Template("teams/$page_number/simple")
 
 COUNTRY = "country"
 ISRAEL = "Israel"
+TEAM_NUMBER = "team_number"
