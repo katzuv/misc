@@ -41,3 +41,22 @@ def get_israeli_teams(teams: list[dict]) -> list[dict]:
     :return: only teams which are based in Israel
     """
     return [team for team in teams if team[COUNTRY] == ISRAEL]
+
+
+def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple, ...]:
+    """
+    :param team_number: team number
+    :param api_key: TBA API auth key
+    :return: years the given team participated in, grouped by consecutive years
+    """
+    team_key = TEAM_KEY_TEMPLATE.substitute(team_number=team_number)
+    url = urllib.parse.urljoin(
+        API_BASE_URL, YEARS_PARTICIPATED_ENDPOINT.substitute(team_key=team_key)
+    )
+    response = requests.get(url, headers={AUTH_KEY_HEADER: api_key})
+    years_participated = response.json()
+
+    grouped_years = more_itertools.consecutive_groups(years_participated)
+    # `itertools.consecutive_groups()` returns a generator, so we convert it to a tuple.
+    grouped_years = tuple(map(tuple, grouped_years))
+    return grouped_years
