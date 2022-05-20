@@ -1,3 +1,4 @@
+import collections
 import itertools
 import string
 import urllib.parse
@@ -16,6 +17,9 @@ TEAM_KEY_TEMPLATE = string.Template("frc$team_number")
 COUNTRY = "country"
 ISRAEL = "Israel"
 TEAM_NUMBER = "team_number"
+
+
+Team = collections.namedtuple("Team", "")
 
 
 def get_all_teams(api_key: str) -> list[dict]:
@@ -85,3 +89,12 @@ def get_formatted_year_spans(grouped_years: Sequence[Sequence[int]]) -> str:
         year_span = f"{first_year}-{last_year}"
         year_spans.append(year_span)
     return ", ".join(year_spans)
+
+
+print(
+    get_formatted_year_spans(
+        get_team_to_years(
+            988, "z3dNrN8LiI6l5cb6m7Ba3qpKy7RfVUMeZSjC7W6z7AIBqIWOu9MhdLYefjMAXDiq"
+        )
+    )
+)
