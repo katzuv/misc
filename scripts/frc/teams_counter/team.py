@@ -5,3 +5,4 @@ import dataclasses
 class Team:
     number: str
     location: str
+    year_spans: list[tuple[int, int]]
