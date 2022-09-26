@@ -10,6 +10,21 @@ API_BASE_URL = "https://www.thebluealliance.com/api/v3/"
 TEAMS_SIMPLE_ENDPOINT = string.Template("teams/$page_number/simple")
 
 
+def send_api_request(endpoint: str, api_key: str) -> dict:
+    """
+    Send a GET request to The Blue Alliance API and return its response.
+
+    :param endpoint: endpoint to send request to
+    :param api_key: API key to access the API with
+    :return: response body
+    :raises: requests.HTTPError if an error occurred
+    """
+    url = urllib.parse.urljoin(API_BASE_URL, endpoint)
+    response = requests.get(url, headers={AUTH_KEY_HEADER: api_key})
+    response.raise_for_status()
+    return response.json()
+
+
 def get_all_teams(api_key: str) -> list[dict]:
     """
     :param api_key: TBA API auth key
