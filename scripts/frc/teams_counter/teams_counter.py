@@ -1,11 +1,9 @@
 import string
-import urllib.parse
 from collections.abc import Sequence
 
 import more_itertools
-import requests
 
-from scripts.frc.tba_api_utils import AUTH_KEY_HEADER, API_BASE_URL
+from scripts.frc.tba_api_utils import send_api_request
 
 
 YEARS_PARTICIPATED_ENDPOINT = string.Template("team/$team_key/years_participated")
@@ -31,11 +29,8 @@ def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple, ...]:
     :return: years the given team participated in, grouped by consecutive years
     """
     team_key = TEAM_KEY_TEMPLATE.substitute(team_number=team_number)
-    url = urllib.parse.urljoin(
-        API_BASE_URL, YEARS_PARTICIPATED_ENDPOINT.substitute(team_key=team_key)
-    )
-    response = requests.get(url, headers={AUTH_KEY_HEADER: api_key})
-    years_participated = response.json()
+    endpoint = YEARS_PARTICIPATED_ENDPOINT.substitute(team_key=team_key)
+    years_participated = send_api_request(endpoint, api_key)
 
     grouped_years = more_itertools.consecutive_groups(years_participated)
     # `itertools.consecutive_groups()` returns a generator, so we convert it to a tuple.
