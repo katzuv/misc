@@ -35,3 +35,11 @@ def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple, ...]:
     # `itertools.consecutive_groups()` returns a generator, so we convert it to a tuple.
     grouped_years = tuple(map(tuple, grouped_years))
     return grouped_years
+
+
+def main():
+    """Run the program: get teams, calculate year spans, and print a list."""
+
+
+if __name__ == "__main__":
+    main()
