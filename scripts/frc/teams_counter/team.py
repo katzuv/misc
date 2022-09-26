@@ -8,6 +8,12 @@ class Team:
     location: str
     year_spans: list[tuple[int, int]]
 
+    def __str__(self):
+        year_spans = self._prettify_year_spans()
+        return (
+            f"#{self.number} - {self.name}, {self.location}. Active years: {year_spans}"
+        )
+
     def _prettify_year_spans(self) -> str:
         """
         :return: prettified year spans the team is active
