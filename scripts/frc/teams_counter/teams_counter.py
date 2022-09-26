@@ -1,5 +1,4 @@
 import string
-from collections.abc import Sequence
 
 import more_itertools
 
@@ -36,26 +35,3 @@ def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple, ...]:
     # `itertools.consecutive_groups()` returns a generator, so we convert it to a tuple.
     grouped_years = tuple(map(tuple, grouped_years))
     return grouped_years
-
-
-def get_formatted_year_spans(grouped_years: Sequence[Sequence[int]]) -> str:
-    """
-    Return a formatted string of grouped years.
-
-    For example, the following groups: `((2001, 2002, 2003), (2005, 2006, 2007, 2008), (2010,))` will be formatted to
-    `"2001-2003, 2005-2008, 2010"`.
-
-    :param grouped_years: years grouped by consecutive years
-    :return: a formatted version of the grouped years
-    """
-    year_spans = []
-    for group in grouped_years:
-        first_year = group[0]
-        if len(group) == 1:
-            # If a group has one year, i.e. has only "2010", write the year alone instead of "2010-2010".
-            year_spans.append(str(first_year))
-            continue
-        last_year = group[-1]
-        year_span = f"{first_year}-{last_year}"
-        year_spans.append(year_span)
-    return ", ".join(year_spans)
