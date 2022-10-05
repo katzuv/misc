@@ -14,6 +14,7 @@ COUNTRY = "country"
 ISRAEL = "Israel"
 TEAM_NUMBER = "team_number"
 TEAM_NAME = "nickname"
+CITY = "city"
 
 
 def get_israeli_teams(teams: list[dict]) -> list[dict]:
