@@ -6,7 +6,7 @@ class Team:
     number: str
     name: str
     location: str
-    year_spans: list[tuple[int, int]]
+    year_spans: tuple[tuple[int, int], ...]
 
     def __str__(self):
         year_spans = self._prettify_year_spans()

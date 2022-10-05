@@ -23,7 +23,7 @@ def get_israeli_teams(teams: list[dict]) -> list[dict]:
     return [team for team in teams if team[COUNTRY] == ISRAEL]
 
 
-def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple, ...]:
+def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple[int, int], ...]:
     """
     :param team_number: team number
     :param api_key: TBA API auth key
