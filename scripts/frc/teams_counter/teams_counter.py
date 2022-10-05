@@ -5,6 +5,8 @@ import more_itertools
 from scripts.frc.tba_api_utils import send_api_request
 
 
+TBA_AUTH_KEY_ENVVAR = "TBA_AUTH_KEY"
+
 YEARS_PARTICIPATED_ENDPOINT = string.Template("team/$team_key/years_participated")
 TEAM_KEY_TEMPLATE = string.Template("frc$team_number")
 
