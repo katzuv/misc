@@ -13,6 +13,7 @@ TEAM_KEY_TEMPLATE = string.Template("frc$team_number")
 COUNTRY = "country"
 ISRAEL = "Israel"
 TEAM_NUMBER = "team_number"
+TEAM_NAME = "nickname"
 
 
 def get_israeli_teams(teams: list[dict]) -> list[dict]:
