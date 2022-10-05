@@ -3,6 +3,7 @@ import string
 import more_itertools
 
 from scripts.frc.tba_api_utils import send_api_request
+from scripts.frc.teams_counter.team import Team
 
 
 TBA_AUTH_KEY_ENVVAR = "TBA_AUTH_KEY"
@@ -39,6 +40,25 @@ def get_team_to_years(team_number: int, api_key: str) -> tuple[tuple[int, int], 
     # `itertools.consecutive_groups()` returns a generator, so we convert it to a tuple.
     grouped_years = tuple(map(tuple, grouped_years))
     return grouped_years
+
+
+def get_teams_objects(teams: list[dict], tba_api_key: str) -> list[Team]:
+    """
+    :param teams: teams in dictionary form
+    :param tba_api_key: API key to access the API with
+    :return: list of teams as `Team` objects
+    """
+    teams_objects = []
+    for team in teams:
+        number = team[TEAM_NUMBER]
+        name = team[TEAM_NAME]
+        city = team[CITY]
+        country = team[COUNTRY]
+        year_spans = get_team_to_years(number, tba_api_key)
+
+        team_object = Team(number, name, city, country, year_spans)
+        teams_objects.append(team_object)
+    return teams_objects
 
 
 def main():

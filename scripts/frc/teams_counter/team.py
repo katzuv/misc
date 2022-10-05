@@ -23,7 +23,7 @@ class Team:
                 year = span[0]
                 output_parts.append(str(year))
             else:
-                first_year, last_year = span
+                first_year, last_year = span[0], span[-1]
                 output_parts.append(f"{first_year}-{last_year}")
 
         return ", ".join(output_parts)
