@@ -1,8 +1,9 @@
+import os
 import string
 
 import more_itertools
 
-from scripts.frc.tba_api_utils import send_api_request
+from scripts.frc.tba_api_utils import send_api_request, get_all_teams
 from scripts.frc.teams_counter.team import Team
 
 
@@ -63,6 +64,14 @@ def get_teams_objects(teams: list[dict], tba_api_key: str) -> list[Team]:
 
 def main():
     """Run the program: get teams, calculate year spans, and print a list."""
+    tba_api_key = os.environ[TBA_AUTH_KEY_ENVVAR]
+    all_teams = get_all_teams(tba_api_key)
+    israeli_teams_dict = get_israeli_teams(all_teams)
+
+    israeli_teams = get_teams_objects(israeli_teams_dict, tba_api_key)
+
+    for index, team in enumerate(israeli_teams, start=1):
+        print(f"{index})\t{team}")
 
 
 if __name__ == "__main__":
