@@ -1,7 +1,7 @@
+import csv
 import sys
 from pathlib import Path
 
-import yaml
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -11,36 +11,53 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 console = Console()
 
-FUND_NAMES = {
-    "5103510": "IBI Shekel Money Market Fund",
-    "5117700": "Ayalon Money Market Fund",
-    "5135926": "Meitav Money Market Fund",
-}
+
+def load_standings():
+    standings_path = Path(__file__).parent / "data" / "standings.csv"
+    standings = {}
+    if standings_path.exists():
+        with open(standings_path, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                standings[row["security_id"]] = {
+                    "current_value": float(row["current_value"]),
+                    "description": row["description"],
+                }
+    return standings
 
 
-def load_transactions():
-    data_dir = Path(__file__).parent / "investments_data"
-    all_txs = []
+def load_transactions_from_csv():
+    csv_path = Path(__file__).parent / "data" / "transactions.csv"
+    txs = []
 
-    for yaml_path in sorted(data_dir.glob("*.yaml")):
-        with open(yaml_path, encoding="utf-8") as f:
-            txs = yaml.safe_load(f)
-            if txs:
-                all_txs.extend(txs)
+    with open(csv_path, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            txs.append(
+                {
+                    "date": row["date"],
+                    "type": row["type"],
+                    "amount": float(row["amount"]),
+                    "tax": float(row["tax"]),
+                    "security_id": row["security_id"],
+                    "security_name": row["security_name"],
+                }
+            )
 
-    return all_txs
+    return txs
 
 
 def main():
-    txs = load_transactions()
+    txs = load_transactions_from_csv()
+    standings = load_standings()
 
-    # Group transactions by fund
+    # Group transactions by fund ID
     funds = {}
     for tx in txs:
-        fid = tx["fund_id"]
+        fid = tx["security_id"]
         if fid not in funds:
             funds[fid] = {
-                "name": FUND_NAMES.get(fid, tx["fund_name"]),
+                "name": tx["security_name"],
                 "buys": [],
                 "sells": [],
                 "transfers": [],
@@ -56,39 +73,27 @@ def main():
     console.print(
         Panel.fit(
             "[bold cyan]Money Market Funds - Overall Earnings & Tax Report[/bold cyan]\n"
-            "[gray]Calculated using: Current Value + All Sales - All Buys - All Taxes[/gray]",
+            "[gray]Parsed from transactions.csv & standings.csv (Current Value + All Sales - All Buys - All Taxes)[/gray]",
             border_style="cyan",
         )
     )
 
-    for fid, data in funds.items():
+    # Sort funds by ID for consistent output ordering
+    for fid in sorted(funds.keys()):
+        data = funds[fid]
         name = data["name"]
 
-        # Aggregate buys, sells and taxes
+        # Aggregate buys, sells, and taxes
         total_buys = sum(abs(tx["amount"]) for tx in data["buys"])
         total_sells = sum(tx["amount"] for tx in data["sells"])
         total_tax = sum(abs(tx["tax"]) for tx in data["sells"])
 
-        # Calculate remaining units
-        total_bought_qty = sum(tx["qty"] for tx in data["buys"])
-        total_sold_qty = sum(abs(tx["qty"]) for tx in data["sells"])
-
-        # Account for bank transfers (which move shares but are not sells)
-        transferred_qty = sum(tx["qty"] for tx in data["transfers"])
-
-        # Net units held
-        net_qty = total_bought_qty - total_sold_qty + transferred_qty
-
-        # Determine current value
-        if fid == "5103510":  # IBI Fund
-            # The user explicitly provided the current balance of 75,882 ILS
-            current_value = 75882.00
-        elif net_qty > 0:
-            # For Meitav, calculate from remaining units and last known price from video (11.6615 ILS)
-            last_price = 11.6615
-            current_value = net_qty * last_price
-        else:
-            current_value = 0.00
+        # Determine current value from standings.csv
+        held_info = standings.get(
+            fid, {"current_value": 0.00, "description": "No standing details found"}
+        )
+        current_value = held_info["current_value"]
+        value_desc = held_info["description"]
 
         # Total earnings formula: Current Value + Sales - Buys - Tax
         net_earnings = current_value + total_sells - total_buys - total_tax
@@ -102,30 +107,19 @@ def main():
         table.add_column("Description", justify="left")
 
         table.add_row(
-            "Total Buys (Cost)",
-            f"{total_buys:,.2f}",
-            f"Total capital invested ({total_bought_qty:,.0f} units)",
+            "Total Buys (Cost)", f"{total_buys:,.2f}", "Total capital invested"
         )
         table.add_row(
             "Total Sells (Proceeds)",
             f"{total_sells:,.2f}",
-            f"Capital realized from sales ({total_sold_qty:,.0f} units)",
+            "Capital realized from sales",
         )
         table.add_row(
             "Total Tax Paid",
             f"{total_tax:,.2f}",
-            "Actual withholding tax deducted by the bank (calculated after inflation)",
+            "Actual withholding tax deducted by bank (already net of inflation)",
         )
-        table.add_row(
-            "Current Held Quantity",
-            f"{net_qty:,.0f} units",
-            "Active position currently held",
-        )
-        table.add_row(
-            "Current Value",
-            f"{current_value:,.2f}",
-            "Current market value of held units",
-        )
+        table.add_row("Current Value", f"{current_value:,.2f}", value_desc)
 
         pnl_style = "green" if net_earnings >= 0 else "red"
         table.add_row(
@@ -136,12 +130,12 @@ def main():
 
         console.print(table)
 
-        # Note about inflation-adjusted tax
-        console.print(
-            "[gray]Note: The tax values shown here are the actual taxes withheld at source by the bank.\n"
-            "By Israeli tax law, the bank automatically adjusts your purchase cost basis for inflation (CPI)\n"
-            "before calculating and deducting the 25% capital gains tax. Hence, the tax is already net of inflation.[/gray]\n"
-        )
+    # Note about inflation-adjusted tax
+    console.print(
+        "[i][gray]Note: The tax values shown here are the actual taxes withheld at source by the bank.\n"
+        "By Israeli tax law, the bank automatically adjusts your purchase cost basis for inflation (CPI)\n"
+        "before calculating and deducting the 25% capital gains tax. Hence, the tax is already net of inflation.[/gray][/i]\n"
+    )
 
 
 if __name__ == "__main__":

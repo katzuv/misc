@@ -458,4 +458,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/git,python,windows,pycharm,pycharm+iml,flask
 
-investements/investements_data/
+scripts/investements/data/
